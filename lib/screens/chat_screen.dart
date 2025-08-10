@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/message.dart';
-import '../widgets/message_bubble.dart';
+import '../widgets/chat_header.dart';
+import '../widgets/messages_list.dart';
 import '../widgets/chat_input.dart';
+import '../widgets/message_actions_sheet.dart';
 import '../widgets/chat_background_painter.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -40,48 +42,42 @@ class _ChatScreenState extends State<ChatScreen> {
   void _loadSampleMessages() {
     final now = DateTime.now();
     
-    // Add some sample messages
+    // Add some sample messages that match the reference image
     _messages.addAll([
       Message(
         id: '1',
-        text: 'Hey! How are you doing?',
-        timestamp: now.subtract(const Duration(minutes: 30)),
-        isMe: false,
+        text: 'Solo Travelling Tips | WhatsApp Channel\n\nSolo Travelling Tips WhatsApp Channel. A safe place to exchange travel experiences, tips, and connect with fellow solo travelers.\n\nFollow the Solo Travelling Tips channel on WhatsApp: https://whatsapp.com/channel/0029VaiLhB58KMqfV1He7u0o',
+        timestamp: now.subtract(const Duration(hours: 2, minutes: 25)),
+        isMe: true,
       ),
       Message(
         id: '2',
-        text: 'I\'m doing great! Just finished working on a new project.',
-        timestamp: now.subtract(const Duration(minutes: 25)),
+        text: 'Voice call',
+        timestamp: now.subtract(const Duration(hours: 2, minutes: 19)),
         isMe: true,
       ),
       Message(
         id: '3',
-        text: 'That sounds exciting! What kind of project is it?',
-        timestamp: now.subtract(const Duration(minutes: 20)),
+        text: 'Missed voice call\nTap to call back',
+        timestamp: now.subtract(const Duration(hours: 2, minutes: 18)),
         isMe: false,
       ),
       Message(
         id: '4',
-        text: 'It\'s a Flutter app with some really cool features. I\'ll show you when it\'s ready!',
-        timestamp: now.subtract(const Duration(minutes: 15)),
+        text: 'Hey Alex, what you\'re doing tonight? 👀',
+        timestamp: now.subtract(const Duration(hours: 1, minutes: 26)),
         isMe: true,
       ),
       Message(
         id: '5',
-        text: 'Can\'t wait to see it! Flutter is amazing for cross-platform development.',
-        timestamp: now.subtract(const Duration(minutes: 10)),
+        text: 'oh I\'m busy tonight 😔',
+        timestamp: now.subtract(const Duration(minutes: 32)),
         isMe: false,
       ),
       Message(
         id: '6',
-        text: 'Exactly! The hot reload feature alone makes development so much faster.',
-        timestamp: now.subtract(const Duration(minutes: 5)),
-        isMe: true,
-      ),
-      Message(
-        id: '7',
-        text: 'I totally agree. Have you tried the new Material 3 components?',
-        timestamp: now.subtract(const Duration(minutes: 2)),
+        text: 'what about tomorrow? I\'m free the whole day!',
+        timestamp: now.subtract(const Duration(minutes: 31)),
         isMe: false,
       ),
     ]);
@@ -144,14 +140,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
   String _getRandomReply() {
     final replies = [
-      'That\'s interesting!',
-      'Tell me more about it.',
-      'Sounds great!',
-      'I\'d love to see it.',
-      'That\'s awesome!',
-      'Keep me updated!',
-      'Looking forward to it!',
+      'That sounds great!',
+      'I\'d love to!',
+      'Perfect timing!',
+      'Count me in!',
+      'Sounds like a plan!',
       'Can\'t wait!',
+      'That works for me!',
+      'Absolutely!',
     ];
     return replies[DateTime.now().millisecond % replies.length];
   }
@@ -160,78 +156,41 @@ class _ChatScreenState extends State<ChatScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              margin: const EdgeInsets.only(top: 8),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF25D366).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.reply, color: Color(0xFF25D366), size: 20),
-              ),
-              title: const Text('Reply', style: TextStyle(fontSize: 16)),
-              onTap: () {
-                setState(() {
-                  _replyTo = message;
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.copy, color: Color(0xFF667781), size: 20),
-              ),
-              title: const Text('Copy', style: TextStyle(fontSize: 16)),
-              onTap: () {
-                // TODO: Implement copy functionality
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.forward, color: Color(0xFF667781), size: 20),
-              ),
-              title: const Text('Forward', style: TextStyle(fontSize: 16)),
-              onTap: () {
-                // TODO: Implement forward functionality
-                Navigator.pop(context);
-              },
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
+      builder: (context) => MessageActionsSheet(
+        message: message,
+        onReply: () {
+          setState(() {
+            _replyTo = message;
+          });
+        },
+        onCopy: () {
+          // TODO: Implement copy functionality
+        },
+        onForward: () {
+          // TODO: Implement forward functionality
+        },
       ),
+    );
+  }
+
+  void _onBack() {
+    // TODO: Implement back navigation
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Back navigation coming soon!')),
+    );
+  }
+
+  void _onVideoCall() {
+    // TODO: Implement video call
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Video call feature coming soon!')),
+    );
+  }
+
+  void _onVoiceCall() {
+    // TODO: Implement voice call
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Voice call feature coming soon!')),
     );
   }
 
@@ -239,192 +198,39 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F0F0), // iOS WhatsApp background
-      body: Column(
-        children: [
-          // App Bar - iOS Style
-          Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFF075E54), // iOS WhatsApp green
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x1A000000),
-                  blurRadius: 8,
-                  offset: Offset(0, 2),
-                ),
-              ],
+      body: CustomPaint(
+        painter: ChatBackgroundPainter(),
+        child: Column(
+          children: [
+            // Chat Header
+            ChatHeader(
+              contactName: 'Alex Smith',
+              status: 'online',
+              profileImageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+              onBack: _onBack,
+              onVideoCall: _onVideoCall,
+              onVoiceCall: _onVoiceCall,
             ),
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Row(
-                  children: [
-                    // Profile Image with online indicator
-                    Stack(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            image: const DecorationImage(
-                              image: NetworkImage('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        // Online indicator
-                        Positioned(
-                          right: 0,
-                          bottom: 0,
-                          child: Container(
-                            width: 12,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF4CAF50),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'John Doe',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'online',
-                                style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    // iOS Style Call Buttons
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          // TODO: Implement video call
-                        },
-                        icon: const Icon(
-                          Icons.video_call,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                        padding: const EdgeInsets.all(8),
-                        constraints: const BoxConstraints(
-                          minWidth: 36,
-                          minHeight: 36,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          // TODO: Implement voice call
-                        },
-                        icon: const Icon(
-                          Icons.call,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                        padding: const EdgeInsets.all(8),
-                        constraints: const BoxConstraints(
-                          minWidth: 36,
-                          minHeight: 36,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          // TODO: Implement more options
-                        },
-                        icon: const Icon(
-                          Icons.more_vert,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                        padding: const EdgeInsets.all(8),
-                        constraints: const BoxConstraints(
-                          minWidth: 36,
-                          minHeight: 36,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            
+            // Messages List
+            MessagesList(
+              messages: _messages,
+              scrollController: _scrollController,
+              onMessageLongPress: _onMessageLongPress,
             ),
-          ),
-          
-          // Messages
-          Expanded(
-            child: Container(
-              color: const Color(0xFFF0F0F0), // iOS WhatsApp background
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: const EdgeInsets.only(top: 16),
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final message = _messages[index];
-                  return GestureDetector(
-                    onLongPress: () => _onMessageLongPress(message),
-                    child: MessageBubble(
-                      message: message,
-                      showReplyPreview: true,
-                    ),
-                  );
-                },
-              ),
+            
+            // Chat Input
+            ChatInput(
+              onSendMessage: _sendMessage,
+              replyTo: _replyTo,
+              onCancelReply: () {
+                setState(() {
+                  _replyTo = null;
+                });
+              },
             ),
-          ),
-          
-          // Chat Input
-          ChatInput(
-            onSendMessage: _sendMessage,
-            replyTo: _replyTo,
-            onCancelReply: () {
-              setState(() {
-                _replyTo = null;
-              });
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -2,6 +2,14 @@
 
 A Flutter app that replicates the WhatsApp chat screen with message & reply functionality, featuring a custom background painter with SVG-style art.
 
+## About This Project
+
+This project was created as a request from one of my X followers:
+
+**Bibek Panda** ([@_Pandabibek](https://x.com/_Pandabibek))
+
+**Original Tweet:** [https://x.com/lukasiuu/status/1953944215353803016](https://x.com/lukasiuu/status/1953944215353803016)
+
 ## Features
 
 - **WhatsApp-like Chat Interface**: Authentic design with proper colors and styling

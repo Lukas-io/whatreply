@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import '../models/message.dart';
 
 class ChatInput extends StatefulWidget {
-  final Function(String text, Message? replyTo) onSendMessage;
+  final Function(String, Message?) onSendMessage;
   final Message? replyTo;
-  final VoidCallback? onCancelReply;
+  final VoidCallback onCancelReply;
 
   const ChatInput({
     super.key,
     required this.onSendMessage,
     this.replyTo,
-    this.onCancelReply,
+    required this.onCancelReply,
   });
 
   @override
@@ -18,29 +18,34 @@ class ChatInput extends StatefulWidget {
 }
 
 class _ChatInputState extends State<ChatInput> {
-  final TextEditingController _textController = TextEditingController();
-  bool _isComposing = false;
+  final TextEditingController _controller = TextEditingController();
+  bool _hasText = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onTextChanged);
+  }
 
   @override
   void dispose() {
-    _textController.dispose();
+    _controller.removeListener(_onTextChanged);
+    _controller.dispose();
     super.dispose();
   }
 
-  void _handleSubmitted(String text) {
-    if (text.trim().isEmpty) return;
-    
-    widget.onSendMessage(text.trim(), widget.replyTo);
-    _textController.clear();
+  void _onTextChanged() {
     setState(() {
-      _isComposing = false;
+      _hasText = _controller.text.trim().isNotEmpty;
     });
   }
 
-  void _handleTextChanged(String text) {
-    setState(() {
-      _isComposing = text.trim().isNotEmpty;
-    });
+  void _sendMessage() {
+    final text = _controller.text.trim();
+    if (text.isNotEmpty) {
+      widget.onSendMessage(text, widget.replyTo);
+      _controller.clear();
+    }
   }
 
   @override
@@ -68,7 +73,7 @@ class _ChatInputState extends State<ChatInput> {
                   color: const Color(0xFFF8F9FA),
                   border: Border(
                     bottom: BorderSide(
-                      color: Colors.grey.withValues(alpha: 0.15),
+                      color: Colors.grey.withValues(alpha: 0.1),
                       width: 0.5,
                     ),
                   ),
@@ -80,7 +85,7 @@ class _ChatInputState extends State<ChatInput> {
                       height: 32,
                       decoration: BoxDecoration(
                         color: const Color(0xFF25D366),
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(1.5),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -91,17 +96,17 @@ class _ChatInputState extends State<ChatInput> {
                           Text(
                             widget.replyTo!.isMe ? 'You' : 'John Doe',
                             style: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 13,
+                              color: Color(0xFF25D366),
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF128C7E),
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             widget.replyTo!.text,
                             style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
+                              fontSize: 13,
+                              color: Colors.grey.withValues(alpha: 0.8),
                               fontWeight: FontWeight.w400,
                             ),
                             maxLines: 1,
@@ -110,19 +115,17 @@ class _ChatInputState extends State<ChatInput> {
                         ],
                       ),
                     ),
-                    GestureDetector(
-                      onTap: widget.onCancelReply,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.close,
-                          size: 16,
-                          color: Color(0xFF667781),
-                        ),
+                    IconButton(
+                      onPressed: widget.onCancelReply,
+                      icon: const Icon(
+                        Icons.close,
+                        color: Color(0xFF667781),
+                        size: 18,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
                       ),
                     ),
                   ],
@@ -134,7 +137,7 @@ class _ChatInputState extends State<ChatInput> {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  // Emoji button
+                  // Plus button
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.grey.withValues(alpha: 0.08),
@@ -142,10 +145,10 @@ class _ChatInputState extends State<ChatInput> {
                     ),
                     child: IconButton(
                       onPressed: () {
-                        // TODO: Implement emoji picker
+                        // TODO: Implement attachment menu
                       },
                       icon: const Icon(
-                        Icons.emoji_emotions_outlined,
+                        Icons.add,
                         color: Color(0xFF667781),
                         size: 22,
                       ),
@@ -159,7 +162,7 @@ class _ChatInputState extends State<ChatInput> {
                   
                   const SizedBox(width: 8),
                   
-                  // Text input
+                  // Text input field
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
@@ -171,9 +174,7 @@ class _ChatInputState extends State<ChatInput> {
                         ),
                       ),
                       child: TextField(
-                        controller: _textController,
-                        onChanged: _handleTextChanged,
-                        onSubmitted: _handleSubmitted,
+                        controller: _controller,
                         decoration: const InputDecoration(
                           hintText: 'Message',
                           hintStyle: TextStyle(
@@ -189,10 +190,7 @@ class _ChatInputState extends State<ChatInput> {
                         ),
                         maxLines: null,
                         textCapitalization: TextCapitalization.sentences,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        onSubmitted: (_) => _sendMessage(),
                       ),
                     ),
                   ),
@@ -202,18 +200,16 @@ class _ChatInputState extends State<ChatInput> {
                   // Send button
                   Container(
                     decoration: BoxDecoration(
-                      color: _isComposing 
+                      color: _hasText
                           ? const Color(0xFF25D366)
                           : Colors.grey.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: IconButton(
-                      onPressed: _isComposing 
-                          ? () => _handleSubmitted(_textController.text)
-                          : null,
+                      onPressed: _hasText ? _sendMessage : null,
                       icon: Icon(
-                        _isComposing ? Icons.send : Icons.send,
-                        color: _isComposing 
+                        _hasText ? Icons.send : Icons.mic,
+                        color: _hasText
                             ? Colors.white
                             : Colors.grey.withValues(alpha: 0.4),
                         size: 18,
