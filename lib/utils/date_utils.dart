@@ -7,7 +7,7 @@ class ChatDateUtils {
     final messageDate = DateTime(timestamp.year, timestamp.month, timestamp.day);
     
     if (messageDate == today) {
-      return DateFormat('HH:mm').format(timestamp);
+      return DateFormat('hh:mm a').format(timestamp); // Changed from HH:mm to hh:mm a for AM/PM
     } else if (messageDate == today.subtract(const Duration(days: 1))) {
       return 'Yesterday';
     } else if (messageDate.isAfter(today.subtract(const Duration(days: 7)))) {

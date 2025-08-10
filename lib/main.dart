@@ -20,8 +20,8 @@ class WhatReplyApp extends StatelessWidget {
         fontFamily: 'SF Pro Display', // iOS system font
         scaffoldBackgroundColor: const Color(0xFFF0F0F0), // iOS background color
         appBarTheme: const AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-          backgroundColor: Color(0xFF075E54),
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
+          backgroundColor: Color(0xFFF8FEF8),
           foregroundColor: Colors.white,
           elevation: 0,
         ),

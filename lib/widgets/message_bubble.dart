@@ -25,7 +25,7 @@ class MessageBubble extends StatelessWidget {
         crossAxisAlignment: message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           if (showReplyPreview && message.replyTo != null)
-            _buildReplyPreview(context),
+        ReplyPreview(message: message),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
@@ -63,7 +63,7 @@ class MessageBubble extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      DateUtils.formatMessageTime(message.timestamp),
+                      ChatDateUtils.formatMessageTime(message.timestamp),
                       style: const TextStyle(
                         fontSize: 11,
                         color: Color(0xFF667781),
@@ -88,7 +88,19 @@ class MessageBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildReplyPreview(BuildContext context) {
+
+}
+
+class ReplyPreview extends StatelessWidget {
+  const ReplyPreview({
+    super.key,
+    required this.message,
+  });
+
+  final Message message;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(
         left: message.isMe ? 0 : 0,
@@ -110,7 +122,7 @@ class MessageBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            message.replyTo!.isMe ? 'You' : 'John Doe',
+            message.replyTo!.isMe ? 'You' : 'Alex Smith',
             style: const TextStyle(
               fontSize: 12,
               color: Color(0xFF25D366),
