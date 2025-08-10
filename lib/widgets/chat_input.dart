@@ -50,7 +50,7 @@ class _ChatInputState extends State<ChatInput> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -63,7 +63,7 @@ class _ChatInputState extends State<ChatInput> {
             // Reply preview
             if (widget.replyTo != null)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF8F9FA),
                   border: Border(
@@ -77,7 +77,7 @@ class _ChatInputState extends State<ChatInput> {
                   children: [
                     Container(
                       width: 3,
-                      height: 36,
+                      height: 32,
                       decoration: BoxDecoration(
                         color: const Color(0xFF25D366),
                         borderRadius: BorderRadius.circular(2),
@@ -131,14 +131,14 @@ class _ChatInputState extends State<ChatInput> {
             
             // Input field
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
                   // Emoji button
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.grey.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: IconButton(
                       onPressed: () {
@@ -147,12 +147,12 @@ class _ChatInputState extends State<ChatInput> {
                       icon: const Icon(
                         Icons.emoji_emotions_outlined,
                         color: Color(0xFF667781),
-                        size: 24,
+                        size: 22,
                       ),
                       padding: const EdgeInsets.all(8),
                       constraints: const BoxConstraints(
-                        minWidth: 44,
-                        minHeight: 44,
+                        minWidth: 40,
+                        minHeight: 40,
                       ),
                     ),
                   ),
@@ -164,7 +164,7 @@ class _ChatInputState extends State<ChatInput> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.grey.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(22),
+                        borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: Colors.grey.withValues(alpha: 0.1),
                           width: 0.5,
@@ -184,7 +184,7 @@ class _ChatInputState extends State<ChatInput> {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(
                             horizontal: 16,
-                            vertical: 12,
+                            vertical: 10,
                           ),
                         ),
                         maxLines: null,
@@ -205,7 +205,7 @@ class _ChatInputState extends State<ChatInput> {
                       color: _isComposing 
                           ? const Color(0xFF25D366)
                           : Colors.grey.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: IconButton(
                       onPressed: _isComposing 
@@ -216,12 +216,12 @@ class _ChatInputState extends State<ChatInput> {
                         color: _isComposing 
                             ? Colors.white
                             : Colors.grey.withValues(alpha: 0.4),
-                        size: 20,
+                        size: 18,
                       ),
                       padding: const EdgeInsets.all(8),
                       constraints: const BoxConstraints(
-                        minWidth: 44,
-                        minHeight: 44,
+                        minWidth: 40,
+                        minHeight: 40,
                       ),
                     ),
                   ),

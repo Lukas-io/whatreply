@@ -22,8 +22,8 @@ class MessageBubble extends StatelessWidget {
         margin: EdgeInsets.only(
           left: message.isMe ? 60 : 16,
           right: message.isMe ? 16 : 60,
-          top: 4,
-          bottom: 4,
+          top: 2,
+          bottom: 2,
         ),
         child: Column(
           crossAxisAlignment: message.isMe 
@@ -33,10 +33,10 @@ class MessageBubble extends StatelessWidget {
             if (message.replyTo != null && showReplyPreview)
               _buildReplyPreview(context),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: message.isMe 
-                    ? const Color(0xFFDCF8C6) // WhatsApp green for sent messages
+                    ? const Color(0xFFDCF8C6) // iOS WhatsApp green for sent messages
                     : Colors.white, // White for received messages
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(18),
@@ -46,8 +46,8 @@ class MessageBubble extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 1,
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 2,
                     offset: const Offset(0, 1),
                   ),
                 ],
@@ -59,14 +59,12 @@ class MessageBubble extends StatelessWidget {
                     message.text,
                     style: TextStyle(
                       fontSize: 16,
-                      color: message.isMe 
-                          ? const Color(0xFF0C1317)
-                          : const Color(0xFF0C1317),
+                      color: const Color(0xFF0C1317),
                       height: 1.3,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -74,9 +72,7 @@ class MessageBubble extends StatelessWidget {
                         ChatDateUtils.formatMessageTime(message.timestamp),
                         style: TextStyle(
                           fontSize: 11,
-                          color: message.isMe 
-                              ? const Color(0xFF667781)
-                              : const Color(0xFF667781),
+                          color: const Color(0xFF667781),
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -106,12 +102,12 @@ class MessageBubble extends StatelessWidget {
       margin: EdgeInsets.only(
         left: message.isMe ? 0 : 0,
         right: message.isMe ? 0 : 0,
-        bottom: 6,
+        bottom: 4,
       ),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
         border: Border(
           left: BorderSide(
             color: message.isMe 
