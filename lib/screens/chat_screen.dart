@@ -5,7 +5,6 @@ import '../models/message_brain.dart';
 import '../widgets/chat_header.dart';
 import '../widgets/messages_list.dart';
 import '../widgets/chat_input.dart';
-import '../widgets/chat_background_painter.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -32,27 +31,29 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _handleSendMessage(String text, {Message? replyTo}) {
     if (text.trim().isEmpty) return;
-    
-    print('🔵 ChatScreen: _handleSendMessage called with text: "$text", replyTo: ${replyTo?.text}');
-    print('🔵 ChatScreen: Message count before adding: ${_messageBrain.messages.length}');
-    
+
+    // Store current scroll position
+    final wasAtBottom =
+        _scrollController.hasClients &&
+        _scrollController.offset >=
+            _scrollController.position.maxScrollExtent - 100;
+
     _messageBrain.addMessage(text, replyTo: replyTo);
-    
-    print('🔵 ChatScreen: Message count after adding: ${_messageBrain.messages.length}');
-    print('🔵 ChatScreen: Latest message: ${_messageBrain.messages.last.text}');
-    
+
     setState(() {});
-    
-    // Scroll to bottom
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
+
+    // Only auto-scroll if user was already at/near bottom
+    if (wasAtBottom) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
   }
 
   void _handleMessageLongPress(Message message) {
@@ -76,10 +77,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: ChatHeader(),
-      backgroundColor: Color(0XFFF6F1EA),
+      backgroundColor: Color(0XFFEFE9E0),
       body: Column(
         children: [
           MessagesList(

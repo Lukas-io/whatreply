@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/message.dart';
 import '../utils/date_utils.dart';
 
-// Simple message widget with minimal UI
 class MessageWidget extends StatelessWidget {
   final Message message;
   final VoidCallback? onTap;
@@ -32,13 +31,16 @@ class MessageWidget extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         // onLongPress: onLongPress,
-        child: Padding(
+        child: Container(
           padding: EdgeInsets.only(
             left: message.isMe ? 60 : 16,
             right: message.isMe ? 16 : 60,
-            top: 4,
-            bottom: 4,
+            top: 2,
+            bottom: 2,
           ),
+          alignment: message.isMe
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
           child: TextMessage(message),
         ),
       ),
@@ -76,108 +78,70 @@ class MessageWidget extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildCallMessage(BuildContext context) {
-    final icon = message.displayIcon;
-    final color = message.displayColor ?? Colors.grey;
+class ReplyContainer extends StatelessWidget {
+  final Message replyTo;
+  final int maxLines;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: message.isMe ? const Color(0xFFDCF8C6) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, color: color, size: 20),
-            const SizedBox(width: 8),
-          ],
-          Text(
-            message.displayText,
-            style: TextStyle(fontSize: 16, color: color),
-          ),
-        ],
-      ),
-    );
-  }
+  const ReplyContainer(this.replyTo, {this.maxLines = 2, super.key});
 
-  Widget _buildChannelMessage(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            message.channelName ?? 'Channel',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF0C1317),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            message.text,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF0C1317)),
-          ),
-        ],
-      ),
-    );
-  }
+  @override
+  Widget build(BuildContext context) {
+    final color = !replyTo.isMe ? Color(0XFFA791FF) : Color(0XFFFB5061);
+    return IntrinsicHeight(
+      child: IntrinsicWidth(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
 
-  Widget _buildDateSeparator(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 16),
-      child: Row(
-        children: [
-          Expanded(child: Divider(color: Colors.grey.withValues(alpha: 0.3))),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              message.text,
-              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-            ),
-          ),
-          Expanded(child: Divider(color: Colors.grey.withValues(alpha: 0.3))),
-        ],
-      ),
-    );
-  }
+          child: Row(
+            children: [
+              Container(color: color, width: 4),
 
-  Widget _buildUnreadSeparator(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 16),
-      child: Row(
-        children: [
-          Expanded(child: Divider(color: Colors.orange.withValues(alpha: 0.5))),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              message.text,
-              style: const TextStyle(
-                fontSize: 11,
-                color: Colors.orange,
-                fontWeight: FontWeight.w600,
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.04),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        replyTo.isMe ? "You" : "Jance",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: color,
+                        ),
+                        maxLines: maxLines,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        replyTo.text,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: maxLines == 1
+                              ? Colors.black87
+                              : Color(0XFF414F42),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-          Expanded(child: Divider(color: Colors.orange.withValues(alpha: 0.5))),
-        ],
+        ),
       ),
     );
   }
 }
 
+// TODO: THIS IS WHAT YOU'RE LOOKING FOR. ALWAYS HAPPY TO HELP!
+//TODO: LOOK AT FROM HERE TILL THE END.
 class TextMessage extends StatelessWidget {
   final Message message;
 
@@ -185,127 +149,121 @@ class TextMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget buildMessageStatus(Message message, {bool isReceived = false}) {
-      if (isReceived) {
-        // For received messages, show a subtle indicator
-        switch (message.deliveryStatus) {
-          case DeliveryStatus.sending:
-            return const Icon(Icons.access_time, size: 12, color: Colors.grey);
-          case DeliveryStatus.sent:
-          case DeliveryStatus.delivered:
-          case DeliveryStatus.read:
-            return const Icon(Icons.circle, size: 6, color: Color(0xFF25D366));
-          default:
-            return const Icon(Icons.circle, size: 6, color: Colors.grey);
-        }
-      } else {
-        // For sent messages, show WhatsApp-style double check marks
-        switch (message.deliveryStatus) {
-          case DeliveryStatus.sending:
-            return const Icon(Icons.access_time, size: 14, color: Colors.grey);
-          case DeliveryStatus.sent:
-            return const Icon(Icons.done, size: 14, color: Colors.grey);
-          case DeliveryStatus.delivered:
-            return const Icon(Icons.done_all, size: 14, color: Colors.grey);
-          case DeliveryStatus.read:
-            return const Icon(
-              Icons.done_all,
-              size: 14,
-              color: Color(0xFF53BDEB),
-            );
-        }
-      }
-    }
-
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: message.isMe ? const Color(0xffD0FECF) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black26, width: 0.2),
       ),
-      child: Column(
-        crossAxisAlignment: message.isMe
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          // Reply preview
-          if (message.replyTo != null) ...[
-            Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border(
-                  left: BorderSide(color: Colors.black38, width: 2),
-                ),
-              ),
-              child: Text(
-                message.replyTo!.text,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.withValues(alpha: 0.8),
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-          Text(
-            message.text,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Color(0xFF0C1317),
-              height: 1.3,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            // Always right-align the time row
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (!message.isMe) ...[
-                // For received messages, show status on the left
-                buildMessageStatus(message, isReceived: true),
-                const SizedBox(width: 4),
+              // Reply preview
+              if (message.replyTo != null) ...[
+                ReplyContainer(message.replyTo!),
               ],
-              Text(
-                ChatDateUtils.formatMessageTime(message.timestamp),
-                style: const TextStyle(fontSize: 11, color: Color(0xFF667781)),
-              ),
-              if (message.isMe) ...[
-                // For sent messages, show status on the right
-                const SizedBox(width: 4),
-                buildMessageStatus(message, isReceived: false),
-              ],
-            ],
-          ),
-          // Swipe hint for text messages that can be replied to
-          if (message.messageType == MessageType.text && message.canReply) ...[
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Icon(
-                  Icons.swipe_right,
-                  size: 12,
-                  color: Colors.grey.withValues(alpha: 0.5),
+              SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.only(
+                  // top: 4.0,
+                  right: 4.0,
+                  left: 4.0,
                 ),
-                const SizedBox(width: 4),
-                Text(
-                  'Swipe right to reply',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey.withValues(alpha: 0.5),
-                    fontStyle: FontStyle.italic,
+                child: RichText(
+                  textWidthBasis: TextWidthBasis.longestLine,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: message.text,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF0C1317),
+                          height: 1.0,
+                          letterSpacing: 0,
+                        ),
+                      ),
+                      TextSpan(text: " "),
+                      //TODO:
+                      /// THIS HELPS TO SET ENOUGH SPACE FOR THE TIME WIDGET. IF IT NEEDS A NEW LINE IT WOULD AUTOMATICALLY ADD IT BECAUSE THE TEXT IS THE SIMILAR WIDTH TO THE TIME WIDGET
+                      TextSpan(
+                        text:
+                            (message.isMe ? "ddd" : "") +
+                            ChatDateUtils.formatMessageTime(message.timestamp),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.transparent,
+                          //TODO: CHANGE THIS TO RED.
+                          wordSpacing: -2,
+                          letterSpacing: 0,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
+          Positioned(bottom: -2, right: 0, child: TimeWidget(message)),
         ],
       ),
     );
+  }
+}
+
+class TimeWidget extends StatelessWidget {
+  final Message message;
+
+  const TimeWidget(this.message, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Text(
+          ChatDateUtils.formatMessageTime(message.timestamp, format: 'hh:mm a'),
+          style: const TextStyle(
+            fontSize: 12,
+            color: Color(0xFF667781),
+            wordSpacing: -2,
+            letterSpacing: 0,
+          ),
+        ),
+        if (message.isMe) ...[
+          const SizedBox(width: 4),
+          buildMessageStatus(message, isReceived: false),
+        ],
+      ],
+    );
+  }
+}
+
+Widget buildMessageStatus(Message message, {bool isReceived = false}) {
+  if (isReceived) {
+    // For received messages, show a subtle indicator
+    switch (message.deliveryStatus) {
+      case DeliveryStatus.sending:
+        return const Icon(Icons.access_time, size: 12, color: Colors.grey);
+      case DeliveryStatus.sent:
+      case DeliveryStatus.delivered:
+      case DeliveryStatus.read:
+        return const Icon(Icons.circle, size: 6, color: Color(0xFF25D366));
+    }
+  } else {
+    // For sent messages, show WhatsApp-style double check marks
+    switch (message.deliveryStatus) {
+      case DeliveryStatus.sending:
+        return const Icon(Icons.access_time, size: 14, color: Colors.grey);
+      case DeliveryStatus.sent:
+        return const Icon(Icons.done, size: 14, color: Colors.grey);
+      case DeliveryStatus.delivered:
+        return const Icon(Icons.done_all, size: 14, color: Colors.grey);
+      case DeliveryStatus.read:
+        return const Icon(Icons.done_all, size: 14, color: Color(0xFF53BDEB));
+    }
   }
 }

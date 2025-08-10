@@ -41,7 +41,7 @@ class _MessagesListState extends State<MessagesList> {
     super.didUpdateWidget(oldWidget);
     // Update callback if MessageBrain instance changes
     if (oldWidget.messageBrain != widget.messageBrain) {
-      oldWidget.messageBrain.setMessagesChangedCallback((){});
+      oldWidget.messageBrain.setMessagesChangedCallback(() {});
       widget.messageBrain.setMessagesChangedCallback(() {
         if (mounted) {
           setState(() {});
@@ -52,28 +52,87 @@ class _MessagesListState extends State<MessagesList> {
 
   @override
   void dispose() {
-    widget.messageBrain.setMessagesChangedCallback((){});
+    widget.messageBrain.setMessagesChangedCallback(() {});
     super.dispose();
+  }
+
+  int getTotalItemCount() {
+    // Add 1 for the date chip if there are messages
+    return widget.messageBrain.messages.isNotEmpty
+        ? widget.messageBrain.messages.length + 1
+        : 0;
+  }
+
+  bool shouldShowDateChip(int index) {
+    // Show date chip at the beginning
+    return index == 0 && widget.messageBrain.messages.isNotEmpty;
+  }
+
+  int getMessageIndex(int listIndex) {
+    // Adjust index to account for date chip
+    return shouldShowDateChip(0) ? listIndex - 1 : listIndex;
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Expanded(
       child: ListView.builder(
-        key: ValueKey('messages_${widget.messageBrain.messages.length}'),
+        // key: ValueKey('messages_${widget.messageBrain.messages.length}'),
         controller: widget.scrollController,
-        padding: const EdgeInsets.only(top: 16),
-        itemCount: widget.messageBrain.messages.length,
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount: getTotalItemCount(),
         itemBuilder: (context, index) {
-          final message = widget.messageBrain.messages[index];
+          // Check if this should be a date chip
+          if (shouldShowDateChip(index)) {
+            return DateChip(text: 'Today');
+          }
+
+          // Get the actual message index (accounting for date chips)
+          final messageIndex = getMessageIndex(index);
+          final message = widget.messageBrain.messages[messageIndex];
+
           return MessageWidget(
-          message:   message,
-            onLongPress: message.canReply ? () => widget.onMessageLongPress(message) : null,
-            onTap: widget.onMessageTap != null ? () => widget.onMessageTap!(message) : null,
-            onSwipeToReply: message.canReply ? (message) => widget.onMessageLongPress(message) : null,
+            message: message,
+            onLongPress: message.canReply
+                ? () => widget.onMessageLongPress(message)
+                : null,
+            onTap: widget.onMessageTap != null
+                ? () => widget.onMessageTap!(message)
+                : null,
+            onSwipeToReply: message.canReply
+                ? (message) => widget.onMessageLongPress(message)
+                : null,
           );
         },
+      ),
+    );
+  }
+}
+
+class DateChip extends StatelessWidget {
+  final String text;
+
+  const DateChip({super.key, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+        decoration: BoxDecoration(
+          color: Color(0XFFFBFAFA),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Color(0XFFFBFAF9), width: 0.5),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: Color(0XFF323232),
+          ),
+        ),
       ),
     );
   }

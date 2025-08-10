@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:whatreply/widgets/message_widgets.dart';
 import '../models/message.dart';
 
 class ChatInput extends StatefulWidget {
@@ -20,7 +21,8 @@ class ChatInput extends StatefulWidget {
 
 class _ChatInputState extends State<ChatInput> {
   final TextEditingController _controller = TextEditingController();
-  bool _hasText = false;
+  final FocusNode focusNode = FocusNode();
+  bool hasText = false;
 
   @override
   void initState() {
@@ -36,7 +38,7 @@ class _ChatInputState extends State<ChatInput> {
 
   void _onTextChanged() {
     setState(() {
-      _hasText = _controller.text.trim().isNotEmpty;
+      hasText = _controller.text.trim().isNotEmpty;
     });
   }
 
@@ -46,8 +48,9 @@ class _ChatInputState extends State<ChatInput> {
       widget.onSendMessage(text, replyTo: widget.replyTo);
       _controller.clear();
       setState(() {
-        _hasText = false;
+        hasText = false;
       });
+      focusNode.requestFocus();
     }
   }
 
@@ -56,52 +59,14 @@ class _ChatInputState extends State<ChatInput> {
     return Column(
       children: [
         // Reply preview
-        if (widget.replyTo != null) ...[
-          Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF0F0F0),
-              borderRadius: BorderRadius.circular(6),
-              border: Border(
-                left: BorderSide(color: const Color(0xFF25D366), width: 2),
-              ),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    widget.replyTo!.text,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.withValues(alpha: 0.8),
-                      fontWeight: FontWeight.w400,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                IconButton(
-                  onPressed: widget.onCancelReply,
-                  icon: const Icon(
-                    Icons.close,
-                    size: 16,
-                    color: Color(0xFF25D366),
-                  ),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 20,
-                    minHeight: 20,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ReplyPreviewWidget(widget: widget),
+
         Container(
           decoration: BoxDecoration(
             color: Color(0xffF5F5F5),
-            border: Border(top: BorderSide(color: Colors.grey, width: 0.2)),
+            border: widget.replyTo != null
+                ? null
+                : Border(top: BorderSide(color: Colors.grey, width: 0.2)),
           ),
           child: SafeArea(
             top: false,
@@ -132,11 +97,12 @@ class _ChatInputState extends State<ChatInput> {
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.grey, width: 0.25),
                     ),
-                    height: 30,
+                    height: 34,
                     alignment: Alignment.topCenter,
-                    padding: EdgeInsets.only(top: 6),
+                    padding: EdgeInsets.only(top: 7),
                     child: TextField(
                       controller: _controller,
+                      focusNode: focusNode,
                       expands: true,
                       decoration: InputDecoration(
                         border: InputBorder.none,
@@ -145,56 +111,141 @@ class _ChatInputState extends State<ChatInput> {
                         constraints: BoxConstraints(minHeight: 30),
 
                         contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16,
+                          horizontal: 12,
                           // vertical: 12,
                         ),
                       ),
 
                       maxLines: null,
-                      style: TextStyle(height: 0, fontSize: 14),
-                      cursorColor: Colors.grey,
+                      style: TextStyle(height: 0, fontSize: 16),
+                      cursorColor: Colors.black45,
 
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _sendMessage(),
                     ),
                   ),
                 ),
-
-                if (_hasText)
-                  IconButton(
-                    onPressed: _sendMessage,
-                    icon: Icon(Icons.send, color: Colors.white, size: 20),
-
-                    style: IconButton.styleFrom(
-                      backgroundColor: const Color(0xFF15C111),
-                      padding: EdgeInsets.zero,
-                    ),
-                  )
-                else
-                  IconButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Voice message feature coming soon!'),
-                          duration: Duration(seconds: 2),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: ScaleTransition(
+                            scale: animation,
+                            child: child,
+                          ),
+                        );
+                      },
+                  child: hasText
+                      ? IconButton(
+                          key: const ValueKey('send_button'),
+                          onPressed: _sendMessage,
+                          icon: Icon(
+                            Icons.send,
+                            color: Colors.black87,
+                            size: 20,
+                          ),
+                          style: IconButton.styleFrom(
+                            backgroundColor: const Color(0xFF1CA961),
+                            padding: EdgeInsets.zero,
+                          ),
+                        )
+                      : IconButton(
+                          key: const ValueKey('mic_button'),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Voice message feature coming soon!',
+                                ),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                          icon: Icon(
+                            CupertinoIcons.mic,
+                            color: Colors.black87,
+                            size: 24,
+                          ),
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                          ),
                         ),
-                      );
-                    },
-                    icon: Icon(
-                      CupertinoIcons.mic,
-                      color: Colors.black87,
-                      size: 24,
-                    ),
-
-                    style: IconButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                    ),
-                  ),
+                ),
               ],
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class ReplyPreviewWidget extends StatelessWidget {
+  const ReplyPreviewWidget({super.key, required this.widget});
+
+  final ChatInput widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.0, 1.0), // Start from bottom
+            end: Offset.zero, // End at normal position
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut)),
+          child: FadeTransition(opacity: animation, child: child),
+        );
+      },
+      child: widget.replyTo != null
+          ? Container(
+              key: const ValueKey('reply_container'),
+              decoration: BoxDecoration(
+                color: Color(0xffF5F5F5),
+                border: Border(top: BorderSide(color: Colors.grey, width: 0.2)),
+              ),
+              padding: EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  Opacity(
+                    opacity: 0,
+                    child: IconButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Attachment feature coming soon!'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        CupertinoIcons.add,
+                        color: Colors.black87,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                  Expanded(child: ReplyContainer(widget.replyTo!, maxLines: 1)),
+                  IconButton.filled(
+                    onPressed: widget.onCancelReply,
+                    icon: const Icon(Icons.close, size: 16),
+                    padding: EdgeInsets.zero,
+                    style: IconButton.styleFrom(
+                      backgroundColor: Color(0XFFCACACA),
+                      foregroundColor: Color(0XFF6B6C6C),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 20,
+                      minHeight: 20,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : const SizedBox.shrink(key: ValueKey('empty_container')),
     );
   }
 }

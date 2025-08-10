@@ -1,13 +1,19 @@
 import 'package:intl/intl.dart';
 
 class ChatDateUtils {
-  static String formatMessageTime(DateTime timestamp) {
+  static String formatMessageTime(DateTime timestamp, {format}) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final messageDate = DateTime(timestamp.year, timestamp.month, timestamp.day);
-    
+    final messageDate = DateTime(
+      timestamp.year,
+      timestamp.month,
+      timestamp.day,
+    );
+
     if (messageDate == today) {
-      return DateFormat('hh:mm a').format(timestamp); // Changed from HH:mm to hh:mm a for AM/PM
+      return DateFormat(
+        format ?? 'hh:mma',
+      ).format(timestamp); // Changed from HH:mm to hh:mm a for AM/PM
     } else if (messageDate == today.subtract(const Duration(days: 1))) {
       return 'Yesterday';
     } else if (messageDate.isAfter(today.subtract(const Duration(days: 7)))) {
@@ -16,11 +22,11 @@ class ChatDateUtils {
       return DateFormat('dd/MM/yyyy').format(timestamp);
     }
   }
-  
+
   static String formatLastSeen(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inMinutes < 60) {

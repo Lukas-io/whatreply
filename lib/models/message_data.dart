@@ -11,16 +11,16 @@ class MessageData {
       hasEmojis: false,
       deliveryStatus: DeliveryStatus.read,
     ),
-    
+
     Message.text(
       id: 'msg_2',
-      text: 'I\'m good, thanks! How about you?',
+      text: 'I\'m good, thanks! How about you',
       timestamp: DateTime.now().subtract(const Duration(hours: 2, minutes: 25)),
       isMe: false,
       hasEmojis: false,
       deliveryStatus: DeliveryStatus.read,
     ),
-    
+
     Message.text(
       id: 'msg_3',
       text: 'Pretty good! Are you free tonight?',
@@ -29,7 +29,7 @@ class MessageData {
       hasEmojis: false,
       deliveryStatus: DeliveryStatus.read,
     ),
-    
+
     Message.text(
       id: 'msg_4',
       text: 'Actually, I\'m busy tonight 😔',
@@ -38,7 +38,7 @@ class MessageData {
       hasEmojis: true,
       deliveryStatus: DeliveryStatus.read,
     ),
-    
+
     Message.text(
       id: 'msg_5',
       text: 'What about tomorrow? I\'m free the whole day!',
@@ -47,7 +47,7 @@ class MessageData {
       hasEmojis: true,
       deliveryStatus: DeliveryStatus.read,
     ),
-    
+
     Message.text(
       id: 'msg_6',
       text: 'That sounds great! What do you have in mind?',
@@ -56,7 +56,7 @@ class MessageData {
       hasEmojis: false,
       deliveryStatus: DeliveryStatus.read,
     ),
-    
+
     Message.text(
       id: 'msg_7',
       text: 'Maybe we could grab coffee and catch up?',
@@ -65,7 +65,7 @@ class MessageData {
       hasEmojis: false,
       deliveryStatus: DeliveryStatus.read,
     ),
-    
+
     Message.text(
       id: 'msg_8',
       text: 'Perfect! I\'d love that ☕️',
@@ -74,7 +74,7 @@ class MessageData {
       hasEmojis: true,
       deliveryStatus: DeliveryStatus.read,
     ),
-    
+
     Message.text(
       id: 'msg_9',
       text: 'Great! How about 2 PM at the usual place?',
@@ -83,7 +83,7 @@ class MessageData {
       hasEmojis: false,
       deliveryStatus: DeliveryStatus.read,
     ),
-    
+
     Message.text(
       id: 'msg_10',
       text: 'Sounds perfect! See you there 👋',
@@ -128,7 +128,11 @@ class MessageData {
   // Get messages for a specific date
   static List<Message> getMessagesForDate(DateTime date) {
     return sampleMessages.where((msg) {
-      final msgDate = DateTime(msg.timestamp.year, msg.timestamp.month, msg.timestamp.day);
+      final msgDate = DateTime(
+        msg.timestamp.year,
+        msg.timestamp.month,
+        msg.timestamp.day,
+      );
       final targetDate = DateTime(date.year, date.month, date.day);
       return msgDate == targetDate;
     }).toList();
@@ -171,37 +175,45 @@ class MessageData {
   static List<Message> getThisWeekMessages() {
     final now = DateTime.now();
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    return sampleMessages.where((msg) => 
-      msg.timestamp.isAfter(startOfWeek.subtract(const Duration(days: 1)))
-    ).toList();
+    return sampleMessages
+        .where(
+          (msg) => msg.timestamp.isAfter(
+            startOfWeek.subtract(const Duration(days: 1)),
+          ),
+        )
+        .toList();
   }
 
   // Get messages for this month
   static List<Message> getThisMonthMessages() {
     final now = DateTime.now();
     final startOfMonth = DateTime(now.year, now.month, 1);
-    return sampleMessages.where((msg) => 
-      msg.timestamp.isAfter(startOfMonth.subtract(const Duration(days: 1)))
-    ).toList();
+    return sampleMessages
+        .where(
+          (msg) => msg.timestamp.isAfter(
+            startOfMonth.subtract(const Duration(days: 1)),
+          ),
+        )
+        .toList();
   }
 
   // Search messages by text
   static List<Message> searchMessages(String query) {
     final lowercaseQuery = query.toLowerCase();
-    return sampleMessages.where((msg) => 
-      msg.text.toLowerCase().contains(lowercaseQuery)
-    ).toList();
+    return sampleMessages
+        .where((msg) => msg.text.toLowerCase().contains(lowercaseQuery))
+        .toList();
   }
 
   // Get message statistics
   static Map<String, int> getMessageStats() {
     final stats = <String, int>{};
-    
+
     for (final msg in sampleMessages) {
       final type = msg.messageType.toString().split('.').last;
       stats[type] = (stats[type] ?? 0) + 1;
     }
-    
+
     return stats;
   }
 
@@ -212,7 +224,7 @@ class MessageData {
     final theirMessages = totalMessages - myMessages;
     final unreadCount = getUnreadCount();
     final lastMessage = getLastMessage();
-    
+
     return {
       'totalMessages': totalMessages,
       'myMessages': myMessages,

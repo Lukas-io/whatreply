@@ -16,27 +16,34 @@ class MessageBrain {
   Message? _currentReplyTo;
   bool _isTyping = false;
   String _typingText = '';
-  
+
   // Callback for UI updates
   VoidCallback? _onMessagesChanged;
-  
+
   // Set callback for UI updates
   void setMessagesChangedCallback(VoidCallback callback) {
     _onMessagesChanged = callback;
   }
-  
+
   // Notify UI that messages have changed
   void _notifyMessagesChanged() {
     _onMessagesChanged?.call();
   }
-  
+
   // Getters
   List<Message> get messages => List.unmodifiable(_messages);
+
   Message? get currentReplyTo => _currentReplyTo;
+
   bool get isTyping => _isTyping;
+
   String get typingText => _typingText;
+
   int get totalMessages => _messages.length;
-  int get unreadCount => _messages.where((msg) => !msg.isMe && !msg.isRead).length;
+
+  int get unreadCount =>
+      _messages.where((msg) => !msg.isMe && !msg.isRead).length;
+
   bool get hasUnreadMessages => unreadCount > 0;
 
   // Initialize with sample data
@@ -47,44 +54,48 @@ class MessageBrain {
 
   // Add new message
   void addMessage(String text, {Message? replyTo}) {
-    print('🟡 MessageBrain: addMessage called with text: "$text", replyTo: ${replyTo?.text}');
-    print('🟡 MessageBrain: Current message count: ${_messages.length}');
-    
     final newMessage = Message.text(
       id: _generateMessageId(),
       text: text,
       timestamp: DateTime.now(),
       isMe: true,
       replyTo: replyTo,
-      hasEmojis: false, // Removed emoji detection to prevent crashes
+      hasEmojis: false,
+      // Removed emoji detection to prevent crashes
       deliveryStatus: DeliveryStatus.sending,
     );
 
-    print('🟡 MessageBrain: Created new message: "${newMessage.text}" with ID: ${newMessage.id}');
-    
+    print(
+      '🟡 MessageBrain: Created new message: "${newMessage.text}" with ID: ${newMessage.id}',
+    );
+
     _messages.add(newMessage);
-    
-    print('🟡 MessageBrain: Added message to list. New count: ${_messages.length}');
-    
+
+    print(
+      '🟡 MessageBrain: Added message to list. New count: ${_messages.length}',
+    );
+
     _sortMessagesByTimestamp();
     _clearReplyTo();
-    
+
     // Simulate message delivery progression
     _simulateMessageDelivery(newMessage);
-    
+
     // Simulate auto-reply after a delay
     _scheduleAutoReply();
-    
+
     // Notify UI that messages have changed
     _notifyMessagesChanged();
-    
-    print('🟡 MessageBrain: addMessage completed. Final count: ${_messages.length}');
+
+    print(
+      '🟡 MessageBrain: addMessage completed. Final count: ${_messages.length}',
+    );
   }
 
   // Add system message (date separator, unread separator, etc.)
   void addSystemMessage(MessageType type, String text, {DateTime? timestamp}) {
     Message systemMessage;
-    
+
     switch (type) {
       case MessageType.dateSeparator:
         systemMessage = Message.dateSeparator(
@@ -165,12 +176,16 @@ class MessageBrain {
   // Search messages
   List<Message> searchMessages(String query) {
     if (query.isEmpty) return _messages;
-    
+
     final lowercaseQuery = query.toLowerCase();
-    return _messages.where((msg) => 
-      msg.text.toLowerCase().contains(lowercaseQuery) ||
-      (msg.channelName?.toLowerCase().contains(lowercaseQuery) ?? false)
-    ).toList();
+    return _messages
+        .where(
+          (msg) =>
+              msg.text.toLowerCase().contains(lowercaseQuery) ||
+              (msg.channelName?.toLowerCase().contains(lowercaseQuery) ??
+                  false),
+        )
+        .toList();
   }
 
   // Filter messages by type
@@ -180,10 +195,13 @@ class MessageBrain {
 
   // Filter messages by date range
   List<Message> filterMessagesByDateRange(DateTime start, DateTime end) {
-    return _messages.where((msg) => 
-      msg.timestamp.isAfter(start.subtract(const Duration(days: 1))) &&
-      msg.timestamp.isBefore(end.add(const Duration(days: 1)))
-    ).toList();
+    return _messages
+        .where(
+          (msg) =>
+              msg.timestamp.isAfter(start.subtract(const Duration(days: 1))) &&
+              msg.timestamp.isBefore(end.add(const Duration(days: 1))),
+        )
+        .toList();
   }
 
   // Get messages for today
@@ -219,10 +237,13 @@ class MessageBrain {
 
   // Get missed calls
   List<Message> getMissedCalls() {
-    return _messages.where((msg) => 
-      msg.messageType == MessageType.voiceCall && 
-      msg.callDirection == CallDirection.missed
-    ).toList();
+    return _messages
+        .where(
+          (msg) =>
+              msg.messageType == MessageType.voiceCall &&
+              msg.callDirection == CallDirection.missed,
+        )
+        .toList();
   }
 
   // Get messages with media
@@ -247,19 +268,19 @@ class MessageBrain {
     final theirMessages = totalMessages - myMessages;
     final unreadCount = this.unreadCount;
     final lastMessage = _messages.isNotEmpty ? _messages.last : null;
-    
+
     // Count by type
     final typeStats = <String, int>{};
     for (final msg in _messages) {
       final type = msg.messageType.toString().split('.').last;
       typeStats[type] = (typeStats[type] ?? 0) + 1;
     }
-    
+
     // Count calls
     final totalCalls = _messages.where((msg) => msg.isCall).length;
     final missedCalls = getMissedCalls().length;
     final completedCalls = totalCalls - missedCalls;
-    
+
     return {
       'totalMessages': totalMessages,
       'myMessages': myMessages,
@@ -281,24 +302,24 @@ class MessageBrain {
   // Get message suggestions based on context
   List<String> getMessageSuggestions(String partialText) {
     if (partialText.isEmpty) return [];
-    
+
     final suggestions = <String>[];
     final lowercasePartial = partialText.toLowerCase();
-    
+
     // Add auto-replies that match the partial text
     for (final reply in MessageData.autoReplies) {
       if (reply.toLowerCase().contains(lowercasePartial)) {
         suggestions.add(reply);
       }
     }
-    
+
     // Add quick replies that match
     for (final emoji in MessageData.quickReplies) {
       if (emoji.contains(partialText)) {
         suggestions.add(emoji);
       }
     }
-    
+
     // Add common phrases
     final commonPhrases = [
       'How are you?',
@@ -310,13 +331,13 @@ class MessageBrain {
       'Awesome!',
       'Perfect!',
     ];
-    
+
     for (final phrase in commonPhrases) {
       if (phrase.toLowerCase().contains(lowercasePartial)) {
         suggestions.add(phrase);
       }
     }
-    
+
     return suggestions.take(5).toList();
   }
 
@@ -345,13 +366,13 @@ class MessageBrain {
   // Schedule auto-reply
   void _scheduleAutoReply() {
     if (_messages.isEmpty) return;
-    
+
     final lastMessage = _messages.last;
     if (lastMessage.isMe) return; // Don't auto-reply to our own messages
-    
+
     // Random delay between 2-8 seconds
     final delay = 2000 + Random().nextInt(6000);
-    
+
     Future.delayed(Duration(milliseconds: delay), () {
       _addAutoReply();
     });
@@ -360,10 +381,10 @@ class MessageBrain {
   // Add auto-reply
   void _addAutoReply() {
     if (_messages.isEmpty) return;
-    
+
     final lastMessage = _messages.last;
     if (!lastMessage.isMe) return; // Only auto-reply to user messages
-    
+
     final autoReplies = [
       'Thanks for your message! I\'ll get back to you soon.',
       'Got it! I\'ll respond in detail later.',
@@ -371,9 +392,9 @@ class MessageBrain {
       'Received! I\'ll get back to you shortly.',
       'Thanks for reaching out! I\'ll respond soon.',
     ];
-    
+
     final randomReply = autoReplies[Random().nextInt(autoReplies.length)];
-    
+
     final replyMessage = Message.text(
       id: _generateMessageId(),
       text: randomReply,
@@ -381,13 +402,13 @@ class MessageBrain {
       isMe: false,
       deliveryStatus: DeliveryStatus.sending,
     );
-    
+
     _messages.add(replyMessage);
     _sortMessagesByTimestamp();
-    
+
     // Notify UI that messages have changed
     _notifyMessagesChanged();
-    
+
     // Simulate auto-reply delivery progression
     _simulateAutoReplyDelivery(replyMessage);
   }
@@ -398,12 +419,12 @@ class MessageBrain {
     Future.delayed(const Duration(milliseconds: 500), () {
       _updateMessageStatus(message.id, DeliveryStatus.sent);
     });
-    
+
     // Message delivered (double tick, grey)
     Future.delayed(const Duration(milliseconds: 1500), () {
       _updateMessageStatus(message.id, DeliveryStatus.delivered);
     });
-    
+
     // Message read (double tick, blue) - happens after auto-reply
     Future.delayed(const Duration(milliseconds: 3000), () {
       _updateMessageStatus(message.id, DeliveryStatus.read);
@@ -426,12 +447,12 @@ class MessageBrain {
     Future.delayed(const Duration(milliseconds: 300), () {
       _updateMessageStatus(message.id, DeliveryStatus.sent);
     });
-    
+
     // Auto-reply delivered (double tick, grey)
     Future.delayed(const Duration(milliseconds: 800), () {
       _updateMessageStatus(message.id, DeliveryStatus.delivered);
     });
-    
+
     // Auto-reply read (double tick, blue) - happens when user sees it
     Future.delayed(const Duration(milliseconds: 2000), () {
       _updateMessageStatus(message.id, DeliveryStatus.read);
@@ -441,12 +462,12 @@ class MessageBrain {
   // Get messages grouped by date
   Map<String, List<Message>> getMessagesGroupedByDate() {
     final grouped = <String, List<Message>>{};
-    
+
     for (final message in _messages) {
       final dateKey = _formatDateKey(message.timestamp);
       grouped.putIfAbsent(dateKey, () => []).add(message);
     }
-    
+
     return grouped;
   }
 
@@ -455,7 +476,7 @@ class MessageBrain {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final messageDate = DateTime(date.year, date.month, date.day);
-    
+
     if (messageDate == today) {
       return 'Today';
     } else if (messageDate == today.subtract(const Duration(days: 1))) {
@@ -469,7 +490,15 @@ class MessageBrain {
 
   // Get day name
   String _getDayName(int weekday) {
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
     return days[weekday - 1];
   }
 
@@ -494,17 +523,17 @@ class MessageBrain {
     buffer.writeln('Unread Messages: $unreadCount');
     buffer.writeln('=' * 50);
     buffer.writeln();
-    
+
     for (final message in _messages) {
       final time = _formatTime(message.timestamp);
       final sender = message.isMe ? 'You' : 'Alex Smith';
       final type = message.messageType.toString().split('.').last;
-      
+
       buffer.writeln('[$time] $sender ($type):');
       buffer.writeln(message.text);
       buffer.writeln();
     }
-    
+
     return buffer.toString();
   }
 
