@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 enum MessageType {
@@ -14,25 +15,11 @@ enum MessageType {
   system,
 }
 
-enum CallDirection {
-  incoming,
-  outgoing,
-  missed,
-}
+enum CallDirection { incoming, outgoing, missed }
 
-enum CallStatus {
-  completed,
-  missed,
-  declined,
-  busy,
-}
+enum CallStatus { completed, missed, declined, busy }
 
-enum DeliveryStatus {
-  sending,
-  sent,
-  delivered,
-  read,
-}
+enum DeliveryStatus { sending, sent, delivered, read }
 
 class Message {
   final String id;
@@ -43,37 +30,37 @@ class Message {
   final Message? replyTo;
   final MessageType messageType;
   final DeliveryStatus deliveryStatus;
-  
+
   // Call-specific properties
   final String? callDuration;
   final CallDirection? callDirection;
   final CallStatus? callStatus;
-  
+
   // Media properties
   final String? mediaUrl;
   final String? mediaThumbnail;
   final String? mediaCaption;
   final int? mediaSize; // in bytes
-  
+
   // Link properties
   final bool hasLink;
   final String? linkText;
   final String? linkUrl;
   final String? linkPreview;
-  
+
   // Action properties
   final bool hasAction;
   final String? actionText;
   final VoidCallback? actionCallback;
-  
+
   // Content properties
   final bool hasEmojis;
   final List<String>? mentionedUsers;
   final Map<String, dynamic>? metadata;
-  
+
   // Unread separator properties
   final int? unreadCount;
-  
+
   // Channel properties
   final String? channelName;
   final String? channelAvatar;
@@ -154,7 +141,9 @@ class Message {
       timestamp: timestamp,
       isMe: isMe,
       isRead: isRead,
-      messageType: direction == CallDirection.incoming ? MessageType.voiceCall : MessageType.videoCall,
+      messageType: direction == CallDirection.incoming
+          ? MessageType.voiceCall
+          : MessageType.videoCall,
       deliveryStatus: DeliveryStatus.sent,
       callDirection: direction,
       callStatus: status,
@@ -259,11 +248,12 @@ class Message {
   }
 
   // Computed properties
-  bool get canReply => messageType == MessageType.text || 
-                      messageType == MessageType.voiceCall || 
-                      messageType == MessageType.videoCall || 
-                      messageType == MessageType.channel;
-  
+  bool get canReply =>
+      messageType == MessageType.text ||
+      messageType == MessageType.voiceCall ||
+      messageType == MessageType.videoCall ||
+      messageType == MessageType.channel;
+
   IconData? get displayIcon {
     switch (messageType) {
       case MessageType.voiceCall:
@@ -274,7 +264,7 @@ class Message {
         return null;
     }
   }
-  
+
   Color? get displayColor {
     switch (messageType) {
       case MessageType.voiceCall:
@@ -294,7 +284,7 @@ class Message {
         return null;
     }
   }
-  
+
   String get displayText {
     switch (messageType) {
       case MessageType.voiceCall:
@@ -394,12 +384,28 @@ class Message {
   }
 
   // Helper methods
-  bool get isCall => messageType == MessageType.voiceCall || messageType == MessageType.videoCall;
-  bool get isMedia => messageType == MessageType.image || messageType == MessageType.document;
-  bool get isSystem => messageType == MessageType.system || messageType == MessageType.dateSeparator || messageType == MessageType.unreadSeparator;
-  bool get canForward => !isSystem && messageType != MessageType.dateSeparator && messageType != MessageType.unreadSeparator;
-  bool get canCopy => !isSystem && messageType != MessageType.dateSeparator && messageType != MessageType.unreadSeparator;
-  
+  bool get isCall =>
+      messageType == MessageType.voiceCall ||
+      messageType == MessageType.videoCall;
+
+  bool get isMedia =>
+      messageType == MessageType.image || messageType == MessageType.document;
+
+  bool get isSystem =>
+      messageType == MessageType.system ||
+      messageType == MessageType.dateSeparator ||
+      messageType == MessageType.unreadSeparator;
+
+  bool get canForward =>
+      !isSystem &&
+      messageType != MessageType.dateSeparator &&
+      messageType != MessageType.unreadSeparator;
+
+  bool get canCopy =>
+      !isSystem &&
+      messageType != MessageType.dateSeparator &&
+      messageType != MessageType.unreadSeparator;
+
   @override
   String toString() {
     return 'Message(id: $id, text: $text, type: $messageType, isMe: $isMe, timestamp: $timestamp)';
