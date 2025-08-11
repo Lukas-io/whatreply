@@ -77,7 +77,7 @@ class _MessagesListState extends State<MessagesList> {
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView.builder(
-        // key: ValueKey('messages_${widget.messageBrain.messages.length}'),
+        key: ValueKey('messages_2'),
         controller: widget.scrollController,
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: getTotalItemCount(),

@@ -13,7 +13,7 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   final MessageBrain _messageBrain = MessageBrain();
 
@@ -32,28 +32,34 @@ class _ChatScreenState extends State<ChatScreen> {
   void _handleSendMessage(String text, {Message? replyTo}) {
     if (text.trim().isEmpty) return;
 
-    // Store current scroll position
-    final wasAtBottom =
-        _scrollController.hasClients &&
-        _scrollController.offset >=
-            _scrollController.position.maxScrollExtent - 100;
-
     _messageBrain.addMessage(text, replyTo: replyTo);
 
     setState(() {});
 
-    // Only auto-scroll if user was already at/near bottom
-    if (wasAtBottom) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
-        }
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    // Keyboard opened/closed
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   void _handleMessageLongPress(Message message) {

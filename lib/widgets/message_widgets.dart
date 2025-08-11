@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../custom_swipe_to_reply_widget.dart';
 import '../models/message.dart';
 import '../utils/date_utils.dart';
 
@@ -8,7 +10,7 @@ class MessageWidget extends StatelessWidget {
   final VoidCallback? onLongPress;
   final Function(Message)? onSwipeToReply;
 
-  MessageWidget({
+  const MessageWidget({
     super.key,
     required this.message,
     this.onTap,
@@ -18,65 +20,7 @@ class MessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      key: Key(message.id),
-      direction: DismissDirection.startToEnd,
-      // Swipe right to reply
-      confirmDismiss: (direction) async {
-        // Trigger reply action
-        onSwipeToReply!(message);
-        return false; // Don't actually dismiss the message
-      },
-      background: _buildSwipeBackground(),
-      child: GestureDetector(
-        onTap: onTap,
-        // onLongPress: onLongPress,
-        child: Container(
-          padding: EdgeInsets.only(
-            left: message.isMe ? 60 : 16,
-            right: message.isMe ? 16 : 60,
-            top: 2,
-            bottom: 2,
-          ),
-          alignment: message.isMe
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
-          child: TextMessage(message),
-        ),
-      ),
-    );
-  }
-
-  final color = Color(0XFFD0FECF);
-
-  Widget _buildSwipeBackground() {
-    return Container(
-      margin: EdgeInsets.only(
-        left: message.isMe ? 60 : 16,
-        right: message.isMe ? 16 : 60,
-        top: 4,
-        bottom: 4,
-      ),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color, width: 1),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(width: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Icon(Icons.reply, color: Colors.white, size: 20),
-          ),
-        ],
-      ),
-    );
+    return CustomSwipeToReply(message: message, onSwipeToReply: onSwipeToReply);
   }
 }
 
