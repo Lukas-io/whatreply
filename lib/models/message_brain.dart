@@ -173,7 +173,6 @@ class MessageBrain {
 
     // Simulate auto-reply delivery progression
     _simulateAutoReplyDelivery(replyMessage);
-    print(_scrollController.hasClients);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
