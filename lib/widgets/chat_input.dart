@@ -110,14 +110,11 @@ class _ChatInputState extends State<ChatInput> {
 
                         constraints: BoxConstraints(minHeight: 30),
 
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          // vertical: 12,
-                        ),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12),
                       ),
 
                       maxLines: null,
-                      style: TextStyle(height: 0, fontSize: 16),
+                      style: TextStyle(height: 0, fontSize: 15),
                       cursorColor: Colors.black45,
 
                       textInputAction: TextInputAction.send,
@@ -204,7 +201,7 @@ class ReplyPreviewWidget extends StatelessWidget {
           ? Container(
               key: const ValueKey('reply_container'),
               decoration: BoxDecoration(
-                color: Color(0xffF5F5F5),
+                color: Color(0xFFF5F5F5),
                 border: Border(top: BorderSide(color: Colors.grey, width: 0.2)),
               ),
               padding: EdgeInsets.only(top: 8),
@@ -234,8 +231,8 @@ class ReplyPreviewWidget extends StatelessWidget {
                     icon: const Icon(Icons.close, size: 16),
                     padding: EdgeInsets.zero,
                     style: IconButton.styleFrom(
-                      backgroundColor: Color(0XFFCACACA),
-                      foregroundColor: Color(0XFF6B6C6C),
+                      backgroundColor: Color(0xFFCACACA),
+                      foregroundColor: Color(0xFF6B6C6C),
                     ),
                     constraints: const BoxConstraints(
                       minWidth: 20,

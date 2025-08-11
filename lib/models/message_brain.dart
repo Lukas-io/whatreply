@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'message.dart';
 import 'message_data.dart';
@@ -10,6 +11,8 @@ class MessageBrain {
   // MessageBrain._internal() {
   //   print('MessageBrain._internal() called. Hash: ${hashCode}');
   // }
+
+  late ScrollController _scrollController;
 
   // Current conversation state
   List<Message> _messages = [];
@@ -41,7 +44,8 @@ class MessageBrain {
   bool get hasUnreadMessages => unreadCount > 0;
 
   // Initialize with sample data
-  void initialize() {
+  void initialize(controller) {
+    _scrollController = controller;
     _messages = List.from(MessageData.sampleMessages);
     _sortMessagesByTimestamp();
   }
@@ -67,15 +71,11 @@ class MessageBrain {
     // Simulate message delivery progression
     _simulateMessageDelivery(newMessage);
 
-    // // Simulate auto-reply after a delay
-    // _scheduleAutoReply();
+    // Simulate auto-reply after a delay
+    _scheduleAutoReply();
 
     // Notify UI that messages have changed
     _notifyMessagesChanged();
-
-    print(
-      '🟡 MessageBrain: addMessage completed. Final count: ${_messages.length}',
-    );
   }
 
   // Set reply to message
@@ -173,6 +173,17 @@ class MessageBrain {
 
     // Simulate auto-reply delivery progression
     _simulateAutoReplyDelivery(replyMessage);
+    print(_scrollController.hasClients);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   // Simulate message delivery progression

@@ -20,7 +20,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _messageBrain.initialize();
+    _messageBrain.initialize(_scrollController);
   }
 
   @override
@@ -40,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (isReply) {
-        await Future.delayed(Duration(milliseconds: 150));
+        await Future.delayed(Duration(milliseconds: 250));
         // Wait an extra frame for reply container to be removed from layout
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_scrollController.hasClients) {
@@ -63,26 +63,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       }
     });
   }
-
-  // void _handleSendMessage(String text, {Message? replyTo}) {
-  //   if (text.trim().isEmpty) return;
-  //
-  //   _messageBrain.addMessage(text, replyTo: replyTo);
-  //
-  //   setState(() {});
-  //   // Wait two frames for proper measurement
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     WidgetsBinding.instance.addPostFrameCallback((_) {
-  //       if (_scrollController.hasClients) {
-  //         _scrollController.animateTo(
-  //           _scrollController.position.maxScrollExtent,
-  //           duration: const Duration(milliseconds: 300),
-  //           curve: Curves.easeOut,
-  //         );
-  //       }
-  //     });
-  //   });
-  // }
 
   @override
   void didChangeMetrics() {

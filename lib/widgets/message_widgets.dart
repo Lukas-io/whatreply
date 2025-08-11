@@ -31,52 +31,50 @@ class ReplyContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = !replyTo.isMe ? Color(0XFFA791FF) : Color(0XFFFB5061);
+    final color = !replyTo.isMe ? Color(0xFF6640FF) : Color(0xFFFA3E51);
     return IntrinsicHeight(
-      child: IntrinsicWidth(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
 
-          child: Row(
-            children: [
-              Container(color: color, width: 4),
+        child: Row(
+          children: [
+            Container(color: color, width: 4),
 
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.04),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        replyTo.isMe ? "You" : "Jance",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: color,
-                        ),
-                        maxLines: maxLines,
-                        overflow: TextOverflow.ellipsis,
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.04),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      replyTo.isMe ? "You" : "Jance",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: color,
                       ),
-                      Text(
-                        replyTo.text,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: maxLines == 1
-                              ? Colors.black87
-                              : Color(0XFF414F42),
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                      maxLines: maxLines,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      replyTo.text,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: maxLines == 1
+                            ? Colors.black87
+                            : Color(0XFF414F42),
                       ),
-                    ],
-                  ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -95,16 +93,16 @@ class TextMessage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: message.isMe ? const Color(0xffD0FECF) : Colors.white,
+        color: message.isMe ? const Color(0xFFD0FECF) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.black26, width: 0.2),
       ),
       child: Stack(
+        fit: StackFit.passthrough,
         children: [
           Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Reply preview
               if (message.replyTo != null) ...[
                 ReplyContainer(message.replyTo!),
               ],

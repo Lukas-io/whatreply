@@ -117,47 +117,50 @@ class CustomSwipeToReplyState extends State<CustomSwipeToReply>
         // Handle pan cancellation
         _controller.reverse();
       },
-      child: Stack(
-        alignment: Alignment.centerLeft,
-        children: [
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Transform.translate(
-                offset: Offset(-40 + 100 * _dragAnimation.value / 2, 0),
-                child: Opacity(
-                  opacity: _indicatorOpacity.value,
-                  child: ReplyIndicatorBubble(
-                    message: widget.message,
-                    progress: _controller.value,
-                    canReply: _dragX >= _triggerDrag,
+      child: Container(
+        //     color: Colors.transparent, Uncomment to make the entire tile swipeable not just the bubble. But it may be difficult scrolling.
+        child: Stack(
+          alignment: Alignment.centerLeft,
+          children: [
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(-40 + 100 * _dragAnimation.value / 2, 0),
+                  child: Opacity(
+                    opacity: _indicatorOpacity.value,
+                    child: ReplyIndicatorBubble(
+                      message: widget.message,
+                      progress: _controller.value,
+                      canReply: _dragX >= _triggerDrag,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-          // The message itself, slides right
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Transform.translate(
-                offset: Offset(_dragX * _dragAnimation.value, 0),
-                child: Container(
-                  padding: EdgeInsets.only(
-                    left: widget.message.isMe ? 60 : 16,
-                    right: widget.message.isMe ? 16 : 60,
-                    top: 2,
-                    bottom: 2,
+                );
+              },
+            ),
+            // The message itself, slides right
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(_dragX * _dragAnimation.value, 0),
+                  child: Container(
+                    padding: EdgeInsets.only(
+                      left: widget.message.isMe ? 60 : 16,
+                      right: widget.message.isMe ? 16 : 60,
+                      top: 2,
+                      bottom: 2,
+                    ),
+                    alignment: widget.message.isMe
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: TextMessage(widget.message),
                   ),
-                  alignment: widget.message.isMe
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: TextMessage(widget.message),
-                ),
-              );
-            },
-          ),
-        ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

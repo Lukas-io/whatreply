@@ -2,44 +2,29 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
-
-
-  const ChatHeader({
-    super.key,
-
-  });
+  const ChatHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return  AppBar(
+    return AppBar(
       foregroundColor: Color(0XFFF8FEF8),
       backgroundColor: Color(0XFFF8FEF8),
       surfaceTintColor: Color(0XFFF8FEF8),
 
       elevation: 0,
-      leading:  IconButton(
+      leading: IconButton(
         onPressed: null,
-        icon: const Icon(
-          Icons.arrow_back_ios,
-          color: Colors.black87,
-          size: 20,
-        ),
+        icon: const Icon(Icons.arrow_back_ios, color: Colors.black87, size: 20),
         padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(
-          minWidth: 32,
-          minHeight: 32,
-        ),
+        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
       ),
       title: Row(
-
         children: [
           // Profile Image (Simplified)
           Container(
             width: 36,
             height: 36,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(108),
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(108)),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(108),
               child: Image.network(
@@ -70,11 +55,11 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
                 Text(
                   "Jance",
                   style: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.4,
-                      height: 0
+                    color: Colors.black87,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.4,
+                    height: 0,
                   ),
                 ),
                 Text(
@@ -89,9 +74,9 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
               ],
             ),
           ),
-        ],),
+        ],
+      ),
       actions: [
-
         // Video call button
         IconButton(
           onPressed: null,
@@ -103,23 +88,17 @@ class ChatHeader extends StatelessWidget implements PreferredSizeWidget {
           padding: const EdgeInsets.all(0),
         ),
 
-
         // Voice call button
         IconButton(
           onPressed: null,
-          icon:  Icon(
-            CupertinoIcons.phone,
-            color: Colors.black87,
-            size: 24,
-          ),
+          icon: Icon(Icons.phone_outlined, color: Colors.black87, size: 24),
           padding: const EdgeInsets.all(0),
         ),
-        SizedBox(width: 12,)
+        SizedBox(width: 12),
       ],
     );
   }
 
   @override
-
-  Size get preferredSize =>Size(double.infinity, 40);
+  Size get preferredSize => Size(double.infinity, 40);
 }
