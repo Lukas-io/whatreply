@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/message.dart';
 import '../models/message_brain.dart';
 import 'message_widgets.dart';
-import 'chat_background_painter.dart';
 
 class MessagesList extends StatefulWidget {
   final ScrollController scrollController;
