@@ -100,53 +100,103 @@ class TextMessage extends StatelessWidget {
       child: Stack(
         fit: StackFit.passthrough,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (message.replyTo != null) ...[
-                ReplyContainer(message.replyTo!),
-              ],
-              SizedBox(height: 4),
-              Padding(
-                padding: const EdgeInsets.only(
-                  // top: 4.0,
-                  right: 4.0,
-                  left: 4.0,
-                ),
-                child: RichText(
-                  textWidthBasis: TextWidthBasis.longestLine,
-                  text: TextSpan(
+          message.replyTo != null
+              ? IntrinsicWidth(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextSpan(
-                        text: message.text,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF0C1317),
-                          height: 1.0,
-                          letterSpacing: 0,
+                      if (message.replyTo != null) ...[
+                        ReplyContainer(message.replyTo!),
+                      ],
+                      SizedBox(height: 4),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          // top: 4.0,
+                          right: 4.0,
+                          left: 4.0,
                         ),
-                      ),
-                      TextSpan(text: " "),
-                      //TODO:
-                      /// THIS HELPS TO SET ENOUGH SPACE FOR THE TIME WIDGET. IF IT NEEDS A NEW LINE IT WOULD AUTOMATICALLY ADD IT BECAUSE THE TEXT IS THE SIMILAR WIDTH TO THE TIME WIDGET
-                      TextSpan(
-                        text:
-                            (message.isMe ? "ddd" : "") +
-                            ChatDateUtils.formatMessageTime(message.timestamp),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.transparent,
-                          //TODO: CHANGE THIS TO RED.
-                          wordSpacing: -2,
-                          letterSpacing: 0,
+                        child: RichText(
+                          textWidthBasis: TextWidthBasis.longestLine,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: message.text,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFF0C1317),
+                                  height: 1.0,
+                                  letterSpacing: 0,
+                                ),
+                              ),
+                              TextSpan(text: " "),
+                              //TODO:
+                              /// THIS HELPS TO SET ENOUGH SPACE FOR THE TIME WIDGET. IF IT NEEDS A NEW LINE IT WOULD AUTOMATICALLY ADD IT BECAUSE THE TEXT IS THE SIMILAR WIDTH TO THE TIME WIDGET
+                              TextSpan(
+                                text:
+                                    (message.isMe ? "ddd" : "") +
+                                    ChatDateUtils.formatMessageTime(
+                                      message.timestamp,
+                                    ),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.transparent,
+                                  //TODO: CHANGE THIS TO RED.
+                                  wordSpacing: -2,
+                                  letterSpacing: 0,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
                   ),
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 2,
+                        right: 4.0,
+                        left: 4.0,
+                      ),
+                      child: RichText(
+                        textWidthBasis: TextWidthBasis.longestLine,
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: message.text,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFF0C1317),
+                                height: 1.0,
+                                letterSpacing: 0,
+                              ),
+                            ),
+                            TextSpan(text: " "),
+                            //TODO:
+                            /// THIS HELPS TO SET ENOUGH SPACE FOR THE TIME WIDGET. IF IT NEEDS A NEW LINE IT WOULD AUTOMATICALLY ADD IT BECAUSE THE TEXT IS THE SIMILAR WIDTH TO THE TIME WIDGET
+                            TextSpan(
+                              text:
+                                  (message.isMe ? "ddd" : "") +
+                                  ChatDateUtils.formatMessageTime(
+                                    message.timestamp,
+                                  ),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.transparent,
+                                //TODO: CHANGE THIS TO RED.
+                                wordSpacing: -2,
+                                letterSpacing: 0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
           Positioned(bottom: -2, right: 0, child: TimeWidget(message)),
         ],
       ),

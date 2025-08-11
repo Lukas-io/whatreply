@@ -21,6 +21,8 @@ class MessageBrain {
   // Callback for UI updates
   VoidCallback? _onMessagesChanged;
 
+  int currentIndex = 0;
+
   // Set callback for UI updates
   void setMessagesChangedCallback(VoidCallback callback) {
     _onMessagesChanged = callback;
@@ -132,8 +134,7 @@ class MessageBrain {
     final lastMessage = _messages.last;
     if (!lastMessage.isMe) return; // Only auto-reply to user messages
 
-    // Random delay between 3-12 seconds
-    final delay = 3000 + Random().nextInt(6000);
+    final delay = 2000 + Random().nextInt(2000);
 
     Future.delayed(Duration(milliseconds: delay), () {
       _addAutoReply();
@@ -148,14 +149,17 @@ class MessageBrain {
     if (!lastMessage.isMe) return; // Only auto-reply to user messages
 
     final autoReplies = [
-      'Thanks for your message! I\'ll get back to you soon.',
-      'Got it! I\'ll respond in detail later.',
-      'Thanks! I\'ll reply when I have a moment.',
-      'Received! I\'ll get back to you shortly.',
-      'Thanks for reaching out! I\'ll respond soon.',
+      'Ooh',
+      'Baby, the weather',
+      'Is getting cold',
+      'Cold inside',
+      'Double sweater',
+      'Ordinary',
+      'I can\'t picture this world, without you in my life, oh',
     ];
 
-    final randomReply = autoReplies[Random().nextInt(autoReplies.length)];
+    final randomReply = autoReplies[currentIndex];
+    currentIndex++;
 
     final replyMessage = Message.text(
       id: _generateMessageId(),
